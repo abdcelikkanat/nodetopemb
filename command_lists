@@ -1,0 +1,8 @@
+# For GibbsLDA++
+./lda -est -alpha 0.5 -beta 0.1 -ntopics 100 -niters 1000 -savestep 100 -twords 20 -dfile ./citeseer.dat
+
+# For topic modeling
+python train.py ./ben/wordmap.txt ./ben/model-final.tassign topic_number
+
+# For deepwalk
+python example_graphs/scoring.py --emb example_graphs2/citeseer.embeddings --network example_graphs2/citeseer.mat --num-shuffle 10 --all
