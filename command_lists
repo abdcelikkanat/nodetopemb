@@ -6,3 +6,6 @@ python train.py ./ben/wordmap.txt ./ben/model-final.tassign topic_number
 
 # For deepwalk
 python example_graphs/scoring.py --emb example_graphs2/citeseer.embeddings --network example_graphs2/citeseer.mat --num-shuffle 10 --all
+
+
+deepwalk --format mat --input example_graphs2/citeseer.mat --number-walks 80 --representation-size 128 --walk-length 40 --window-size 10 --workers 1 --output example_graphs2/citeseer_test.embeddings
