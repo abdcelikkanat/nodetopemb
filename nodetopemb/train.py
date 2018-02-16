@@ -1,8 +1,16 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import gensim
 import numpy as np
 from nodetopemb import *
+import sys
 
-number_of_topics = 1
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+number_of_nodes = 0
+number_of_topics = 5
 
 embedding_dim = 128
 window_size = 10
@@ -10,92 +18,69 @@ workers = 3
 #walks_file = "../output/citeseer_unheader.dat"
 #output_file = "../output/citeseer_raw.embeddings"
 
-folder = "citeseer1"
+folder = "simple"
 #folder = "simple1"
-walks_file = "../output/"+folder+"_unheader.dat"
+walks_file = "../input/"+folder+".dat"
 output_file = "../output/"+folder+".embeddings"
 
+# Read the document -> number of walks
+## It is assumed that the file consists of one line
+document = []
+with open(walks_file) as f:
+    for line in f:
+        for v in line.strip().split():
+            if v:
+                document.append(unicode(int(v)))
 
-def update_walks_for_twe2(wordmap_file, tassing_file, number_of_topics=0):
-    # Read tassing file and extract
-    number_of_nodes = 0
-    id2word = {}
-    with open(wordmap_file, 'r') as f:
-        number_of_nodes = int(f.readline().strip().split()[0])  # skip the first line
-        for line in f:
-            m = line.strip().split()
-            id2word.update({m[1]: m[0]})
+                node = int(v)
+                if node > number_of_nodes:
+                    number_of_nodes = node
+number_of_nodes += 1
 
-    #wordXtopicMatrix = np.zeros(shape=(len(id2word, number_of_topics)))
+# Set the dictionary
+dict = gensim.corpora.Dictionary([[unicode(node) for node in range(number_of_nodes)]])
 
-    new_walk = []
-    with open(tassing_file, 'r') as f:
-        content = f.readline().strip().split()
+# Extract the corpus
+corpus = [dict.doc2bow(document)]
 
-        for pair in content:
-            wordId, topic = pair.split(':')
-            new_walk.append(id2word[wordId]+"-"+topic)
+# Run LDA
+id2word = {i:v for i, v in dict.items()}
+lda = gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=id2word, num_topics=number_of_topics)
 
-    return new_walk, number_of_nodes
-
-
-new_walks, number_of_nodes = update_walks_for_twe2(wordmap_file="../input/"+folder+"_wordmap.txt", tassing_file="../input/"+folder+"_model-final.tassign")
-new_walks_file = "../output/"+folder+"_twe2.dat"
-with open(new_walks_file, "w") as f:
-    f.write(" ".join(new_walks))
-
-
-print("Training")
-raw_walks = gensim.models.word2vec.LineSentence(walks_file)
-modell = gensim.models.Word2Vec(raw_walks, size=embedding_dim, window=window_size,
-                               min_count=0, sg=1, hs=1,
-                               workers=workers)
-modell.wv.save_word2vec_format("../output/citeseer_raw.embeddings")
-
-new_walks = gensim.models.word2vec.LineSentence(new_walks_file)
-
-print("Training")
-model = gensim.models.Word2Vec(new_walks, size=embedding_dim, window=window_size,
-                               min_count=0, sg=1, hs=1,
-                               workers=workers)
+# Find the topic assignments of each word
+word2topic = {}
+for word in dict.values():
+    top_prob = lda.get_term_topics(dict.token2id[word])
+    word2topic.update({word: max(top_prob,key=lambda item:item[1])[0]})
 
 
+print("Training for original walks")
+# Generate new walks in the form of (word:topic) for TWE2
+new_walks = []
+for node in document:
+    node_topic = word2topic[node]
+    new_walks.append(node+":"+str(node_topic))
+
+## Run the word2vec to extract embeddings, and write the embeddings to a file
+new_walks_model = gensim.models.Word2Vec(new_walks, size=embedding_dim, window=window_size,
+                                         min_count=0, sg=1, hs=1, workers=workers)
+## Save the embeddings
+new_walks_model.wv.save_word2vec_format("../output/"+folder+"_.embeddings")
 
 
-output_file = "../output/"+folder+"_inprocess_twe2.embeddings"
-model.wv.save_word2vec_format(output_file)
+print("Training for TWE2")
+# Generate new walks in the form of (word:topic) for TWE2
+new_walks = []
+for node in document:
+    node_topic = word2topic[node]
+    new_walks.append(node+":"+str(node_topic))
 
-
-word2topicMatrix = np.zeros(shape=(number_of_nodes, number_of_topics), dtype=np.int)
-with open(output_file, 'r') as f:
-    f.readline()
-    for line in f.readlines():
-        l = line.strip().split()
-
-        word, topic = l[0].split('-')
-        word2topicMatrix[int(word), int(topic)] += 1
-
-embeddings = [[] for _ in range(number_of_nodes)]
-with open(output_file, 'r') as f:
-    pair_counts, _ = f.readline().strip().split()
-    pair_counts = int(pair_counts)
-
-
-    for line in f.readlines():
-        l = line.strip().split()
-
-        word, topic = l[0].split('-')
-
-        #embeddings[int(word)].append([np.float(val) for val in l[1:]])
-        embeddings[int(word)].append([np.float(val)*word2topicMatrix[int(word), int(topic)] for val in l[1:]])
+## Run the word2vec to extract embeddings, and write the embeddings to a file
+new_walks_model = gensim.models.Word2Vec(new_walks, size=embedding_dim, window=window_size,
+                                         min_count=0, sg=1, hs=1, workers=workers)
+## Save the embeddings
+new_walks_model.wv.save_word2vec_format("../output/"+folder+"_twe2.embeddings")
 
 
 
-#embeddings_mean = [np.mean(embeddings[i], axis=0) for i in range(number_of_nodes)]
-embeddings_mean = [np.sum(embeddings[i], axis=0)/np.sum(word2topicMatrix[i]) for i in range(number_of_nodes)]
 
-output_file = "../output/"+folder+"_twe2.embeddings"
-with open(output_file, 'w') as f:
-    f.write(str(number_of_nodes) + " " + str(embedding_dim) + "\n")
-    for i in range(number_of_nodes):
-        f.write(str(i) + " " + " ".join([str(val) for val in embeddings_mean[i]]) + "\n")
