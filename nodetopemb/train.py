@@ -2,7 +2,7 @@ import gensim
 import numpy as np
 from nodetopemb import *
 
-number_of_topics = 100
+number_of_topics = 1
 
 embedding_dim = 128
 window_size = 10
@@ -10,7 +10,8 @@ workers = 3
 #walks_file = "../output/citeseer_unheader.dat"
 #output_file = "../output/citeseer_raw.embeddings"
 
-folder = "citeseer"
+folder = "citeseer1"
+#folder = "simple1"
 walks_file = "../output/"+folder+"_unheader.dat"
 output_file = "../output/"+folder+".embeddings"
 
@@ -39,10 +40,18 @@ def update_walks_for_twe2(wordmap_file, tassing_file, number_of_topics=0):
 
 
 new_walks, number_of_nodes = update_walks_for_twe2(wordmap_file="../input/"+folder+"_wordmap.txt", tassing_file="../input/"+folder+"_model-final.tassign")
-with open("../output/"+folder+"_twe2.dat", "w") as f:
+new_walks_file = "../output/"+folder+"_twe2.dat"
+with open(new_walks_file, "w") as f:
     f.write(" ".join(new_walks))
 
-new_walks_file = "../output/"+folder+"_twe2.dat"
+
+print("Training")
+raw_walks = gensim.models.word2vec.LineSentence(walks_file)
+modell = gensim.models.Word2Vec(raw_walks, size=embedding_dim, window=window_size,
+                               min_count=0, sg=1, hs=1,
+                               workers=workers)
+modell.wv.save_word2vec_format("../output/citeseer_raw.embeddings")
+
 new_walks = gensim.models.word2vec.LineSentence(new_walks_file)
 
 print("Training")
