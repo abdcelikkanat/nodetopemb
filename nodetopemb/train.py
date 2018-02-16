@@ -1,8 +1,10 @@
 import gensim
 import numpy as np
 from nodetopemb import *
+import time
 
-number_of_topics = 1
+
+number_of_topics = 350
 
 embedding_dim = 128
 window_size = 10
@@ -10,7 +12,7 @@ workers = 3
 #walks_file = "../output/citeseer_unheader.dat"
 #output_file = "../output/citeseer_raw.embeddings"
 
-folder = "citeseer1"
+folder = "citeseerOneLine"
 #folder = "simple1"
 walks_file = "../output/"+folder+"_unheader.dat"
 output_file = "../output/"+folder+".embeddings"
@@ -46,25 +48,30 @@ with open(new_walks_file, "w") as f:
 
 
 print("Training")
+start = time.time()
 raw_walks = gensim.models.word2vec.LineSentence(walks_file)
 modell = gensim.models.Word2Vec(raw_walks, size=embedding_dim, window=window_size,
                                min_count=0, sg=1, hs=1,
                                workers=workers)
-modell.wv.save_word2vec_format("../output/citeseer_raw.embeddings")
+modell.wv.save_word2vec_format("../output/"+folder+"_raw.embeddings")
+print("Exec time: "+ str(time.time()-start))
 
-new_walks = gensim.models.word2vec.LineSentence(new_walks_file)
+
+
 
 print("Training")
+start = time.time()
+new_walks = gensim.models.word2vec.LineSentence(new_walks_file)
 model = gensim.models.Word2Vec(new_walks, size=embedding_dim, window=window_size,
                                min_count=0, sg=1, hs=1,
                                workers=workers)
 
-
-
-
 output_file = "../output/"+folder+"_inprocess_twe2.embeddings"
 model.wv.save_word2vec_format(output_file)
+print("Exec time: "+ str(time.time()-start))
 
+
+embedIndex = []
 
 word2topicMatrix = np.zeros(shape=(number_of_nodes, number_of_topics), dtype=np.int)
 with open(output_file, 'r') as f:
@@ -74,6 +81,10 @@ with open(output_file, 'r') as f:
 
         word, topic = l[0].split('-')
         word2topicMatrix[int(word), int(topic)] += 1
+
+        ###########
+        embedIndex.append(int(word))
+        ###########
 
 embeddings = [[] for _ in range(number_of_nodes)]
 with open(output_file, 'r') as f:
@@ -98,4 +109,5 @@ output_file = "../output/"+folder+"_twe2.embeddings"
 with open(output_file, 'w') as f:
     f.write(str(number_of_nodes) + " " + str(embedding_dim) + "\n")
     for i in range(number_of_nodes):
+    #for i in embedIndex:
         f.write(str(i) + " " + " ".join([str(val) for val in embeddings_mean[i]]) + "\n")
