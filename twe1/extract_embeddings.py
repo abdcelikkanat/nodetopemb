@@ -1,9 +1,11 @@
 #/home/abdulkadir/anaconda2/envs/twe/bin python
 
+import os
+import time
 import oldgensim.gensim as gensim2 #modified gensim version
-from get_topics import get_topics
 
-def concatenate_embeddings(word_embed_file, topic_embed_file, word2topic, output_filename):
+
+def concatenate_embeddings(word_embed_file, topic_embed_file, word2topic_file, output_filename):
     # Combine Embeddings
     print("Embeddings are being concatenated...")
     word_embed = {}
@@ -22,13 +24,12 @@ def concatenate_embeddings(word_embed_file, topic_embed_file, word2topic, output
             topic_embed.update({unicode(topic_num): [val for val in tokens]})
             topic_num += 1
 
-
-
-    #with open(word2topic_file, 'r') as f:
-    #    for line in f:
-    #        tokens = line.strip().split()
-    #        word2topic.update({tokens[0]: tokens[1]})
-
+    # Read the word2topic file, file format: (word topic)
+    word2topic = {}
+    with open(word2topic_file, 'r') as f:
+        for line in f:
+            tokens = line.strip().split()
+            word2topic.update({tokens[0]: tokens[1]})
 
     combined_embed = {}
     for word in word_embed:
@@ -41,7 +42,7 @@ def concatenate_embeddings(word_embed_file, topic_embed_file, word2topic, output
         for word in combined_embed:
             f.write("{} {}\n".format(word, " ".join(combined_embed[word])))
 
-def extract_embedding(corpus_filename, topic_filename, number_of_topics, word_embed_filename, word_embed_size, topic_embed_filename, topic_embed_size, combined_embed_filename):
+def extract_embedding(corpus_file, topic_file, window_size, number_of_nodes, number_of_topics, word2topic_file, word_embed_file, word_embed_size, topic_embed_file, topic_embed_size, combined_embed_file):
     """
     Files which will be used
     - corpus_filename
@@ -53,7 +54,7 @@ def extract_embedding(corpus_filename, topic_filename, number_of_topics, word_em
 
     """
     print("The word corpus file is being read...")
-    word_sentences = gensim2.models.word2vec.Text8Corpus(corpus_filename)
+    word_sentences = gensim2.models.word2vec.Text8Corpus(corpus_file)
 
 
     print "Training the word vector..."
@@ -61,20 +62,22 @@ def extract_embedding(corpus_filename, topic_filename, number_of_topics, word_em
                                  sg=1, hs=1, workers=1,
                                  sample=0.001, negative=5)
     print "Saving the word vectors..."
-    w1.save_wordvector(word_embed_filename)
+    w1.save_wordvector(word_embed_file)
 
     print("Topics of each node are being detected")
-    word2topic = get_topics(walks_file=corpus_filename, output_topic_file=topic_filename,
-                            number_of_topics=number_of_topics, number_of_nodes=number_of_nodes)
+    #word2topic = get_topics(walks_file=corpus_filename, output_topic_file=topic_filename,
+    #                        number_of_topics=number_of_topics, number_of_nodes=number_of_nodes)
+    gensim_path = "/home/abdulkadir/anaconda2/envs/twegensim/bin/python"
+    os.system(gensim_path + " ./get_topics.py "+corpus_file+" "+topic_file+" "+word2topic_file+" "+str(number_of_topics)+" "+str(number_of_nodes))
 
     print("The word corpus and topic files are being combined...")
-    combined_sentences = gensim2.models.word2vec.CombinedSentence(corpus_filename, topic_filename)
+    combined_sentences = gensim2.models.word2vec.CombinedSentence(corpus_file, topic_file)
 
     print "Training the topic vector..."
     if word_embed_size == topic_embed_size:
         w1.train_topic(number_of_topics, combined_sentences)
         print "Saving the topic vectors..."
-        w1.save_topic(topic_embed_filename)
+        w1.save_topic(topic_embed_file)
     else:
         w2 = gensim2.models.Word2Vec(size=topic_embed_size, window=window_size,
                                      sg=1, hs=1, workers=1,
@@ -85,29 +88,6 @@ def extract_embedding(corpus_filename, topic_filename, number_of_topics, word_em
         w2.save_topic(topic_embed_file)
 
     print("Embeddings are being concatenated...")
-    concatenate_embeddings(word_embed_file=word_embed_filename, topic_embed_file=topic_embed_file,
-                           word2topic=word2topic, output_filename=combined_embed_filename)
+    concatenate_embeddings(word_embed_file=word_embed_file, topic_embed_file=topic_embed_file,
+                           word2topic_file=word2topic_file, output_filename=combined_embed_file)
 
-dataset_name = "karate"
-number_of_topics = 2
-number_of_nodes = 34
-
-word_embed_size = 128
-topic_embed_size = 128
-window_size = 10
-
-
-walks_file = "./input/" + dataset_name + "_walk.corpus"
-topic_file = "./input/" + dataset_name + "_topic.corpus"
-word2topic_file = "./input/" + dataset_name + "_word2topic.dat"
-
-word_embed_file = "./output/" + dataset_name +"_word.embedding"
-topic_embed_file = "./output/" + dataset_name +"_topic.embedding"
-#combined_embed_file = "../../deepwalk/example_graphs3/ " + dataset_name +"_combined_embedding"
-combined_embed_file = "./output/" + dataset_name +"_combined.embedding"
-
-
-extract_embedding(corpus_filename=walks_file, topic_filename=topic_file, number_of_topics=number_of_topics,
-                  word_embed_filename=word_embed_file, word_embed_size=word_embed_size,
-                  topic_embed_filename=topic_embed_file, topic_embed_size=topic_embed_size,
-                  combined_embed_filename=combined_embed_file)
