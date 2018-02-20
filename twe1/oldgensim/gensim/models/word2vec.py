@@ -95,9 +95,9 @@ except ImportError:
         print(get_include())
         pyximport.install(setup_args={"include_dirs": [models_dir, get_include()]})
         from word2vec_inner import train_sentence_sg, train_sentence_cbow, FAST_VERSION, train_sentence_topic
-        print("BURDA1")
+
     except:
-	print("BURDA")        
+
         # failed... fall back to plain numpy (20-80x slower training than the above)
         FAST_VERSION = -1
 
