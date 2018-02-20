@@ -32,7 +32,7 @@ def get_topics(walks_file, output_topic_file, word2topic_file, number_of_topics,
     # Run LDA
     #id2word = {i:v for i, v in dict.items()}
     id2word = dict
-    lda = gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=id2word, num_topics=number_of_topics)
+    lda = gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=id2word, num_topics=number_of_topics, passes=5)
 
     # Find the topic assignments of each word
     clusters = [[] for _ in range(number_of_topics)]
