@@ -3,10 +3,11 @@ import sys
 import gensim
 
 
-def get_topics(walks_file, output_topic_file, word2topic_file, number_of_topics, number_of_nodes):
+def get_topics(walks_file, output_topic_file, word2topic_file, number_of_topics, number_of_nodes, passes):
 
     number_of_topics = int(number_of_topics)
     number_of_nodes = int(number_of_nodes)
+    passes = int(passes)
 
     # Read the document -> number of walks
     ## It is assumed that the file consists of one line
@@ -32,7 +33,7 @@ def get_topics(walks_file, output_topic_file, word2topic_file, number_of_topics,
     # Run LDA
     #id2word = {i:v for i, v in dict.items()}
     id2word = dict
-    lda = gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=id2word, num_topics=number_of_topics, passes=5)
+    lda = gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=id2word, num_topics=number_of_topics, passes=passes)
 
     # Find the topic assignments of each word
     clusters = [[] for _ in range(number_of_topics)]
@@ -61,4 +62,4 @@ def get_topics(walks_file, output_topic_file, word2topic_file, number_of_topics,
 
 
 if __name__ == "__main__":
-    get_topics(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+    get_topics(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])

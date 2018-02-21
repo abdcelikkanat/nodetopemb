@@ -972,6 +972,8 @@ class Word2Vec(utils.SaveLoad):
     def save_topic(self, filename):
         topic_num = len(self.syn0_topic)
         with open(filename, "w") as f:
+            title = str(topic_num) + " " + str(len(self.syn0_topic[0]))
+            print >> f, title
             for i in range(topic_num):
                 for j in range(len(self.syn0_topic[0])):
                     f.write(str(self.syn0_topic[i][j])+" ")

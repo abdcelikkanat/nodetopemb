@@ -10,16 +10,20 @@ dataset_name = "citeseer"
 nx_graph_path = "../datasets/"+dataset_name+".gml"
 nx_graph = nx.read_gml(nx_graph_path)
 
-number_of_topics = 65
+number_of_topics = 100
 number_of_nodes = nx_graph.number_of_nodes()
 
 generate_walks = True
 num_of_paths = 80
-path_length = 40
+path_length = 300
 window_size = 10
 num_of_documents = 1
 together = False
+num_of_workers = 3
+passes = 1
 
+method = "Deepwalk"
+params = {'alpha': 0.0}
 word_embed_size = 128
 topic_embed_size = 128
 
@@ -45,7 +49,10 @@ if generate_walks is True:
                    num_of_paths=num_of_paths,
                    path_length=path_length,
                    num_of_documents=num_of_documents,
+                   params=params, method=method,
                    together=together)
+
+    print("BURDA")
 
 
 start_time = time.time()
@@ -54,6 +61,7 @@ extract_embedding(corpus_file=walks_file, topic_file=topic_file,
                   word2topic_file=word2topic_file,
                   word_embed_file=word_embed_file, word_embed_size=word_embed_size,
                   topic_embed_file=topic_embed_file, topic_embed_size=topic_embed_size,
-                  combined_embed_file=combined_embed_file)
+                  combined_embed_file=combined_embed_file,
+                  num_of_workers=num_of_workers, passes=passes)
 total_time = time.time()-start_time
 print("Total time: {} sec, {} min".format(total_time, total_time/60.0))

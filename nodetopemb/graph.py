@@ -1,4 +1,6 @@
 import random
+import node2vec
+import networkx as nx
 
 class Graph:
     """
@@ -57,13 +59,14 @@ class Graph:
 
         return path
 
-    def graph2doc(self, number_of_paths, path_length, alpha=0.0, rand=random.Random(), method="Deepwalk"):
+    def graph2doc(self, number_of_paths, path_length, params=dict(), rand=random.Random(), method="Deepwalk"):
 
         corpus = []
 
         node_list = range(self.num_of_nodes)
 
         if method == "Deepwalk":
+            alpha = params['alpha']
 
             for _ in range(number_of_paths):
                 # Shuffle the nodes
@@ -73,6 +76,23 @@ class Graph:
                     walk = self.deepwalk_step(path_length=path_length, rand=rand, alpha=alpha,
                                               starting_node=node)
                     corpus.append(walk)
+
+        if method == "Node2Vec":
+            # Generate the desired networkx graph
+            p = params['p']
+            q = params['q']
+
+            nxg = nx.Graph()
+            for i in range(self.number_of_nodes()):
+                for j in self.adj_list[i]:
+                    nxg.add_edge(str(i), str(j))
+                    nxg[str(i)][str(j)]['weight'] = 1
+
+            G = node2vec.Graph(nx_G=nxg, p=p, q=q, is_directed=False)
+            G.preprocess_transition_probs()
+            walks = G.simulate_walks(num_walks=number_of_paths, walk_length=path_length)
+
+            corpus = walks
 
 
         return corpus
