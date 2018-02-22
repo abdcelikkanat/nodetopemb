@@ -9,14 +9,16 @@ print(mat_dict['network'].shape)
 n = mat_dict['network'].shape[1]
 c = mat_dict['group'].shape[1]
 
-
 g = nx.Graph()
 networx = mat_dict['network']
 cx = networx.tocoo()
-for i, j, val in zip(cx.row, cx.col, cx.data):
-    if val:
-        g.add_edge(str(i), str(j))
 
+for i in range(len(cx.row)):
+    if cx.data[i]:
+        g.add_edge(str(cx.row[i]), str(cx.col[i]))
+
+print(g.number_of_nodes())
+print(g.number_of_edges())
 
 nx.write_gml(g, "../datasets/"+dataset_name+".gml")
 

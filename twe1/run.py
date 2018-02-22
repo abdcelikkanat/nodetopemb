@@ -5,40 +5,44 @@ import time
 import networkx as nx
 import oldgensim.gensim as gensim2 #modified gensim version
 
-dataset_name = "citeseer"
+dataset_name = "blogcatalog"
+suffix = "node2vec_p2_q025"
+
 
 nx_graph_path = "../datasets/"+dataset_name+".gml"
 nx_graph = nx.read_gml(nx_graph_path)
 
-number_of_topics = 100
+number_of_topics = 65 #65
 number_of_nodes = nx_graph.number_of_nodes()
 
 generate_walks = True
-num_of_paths = 80
-path_length = 300
-window_size = 10
+num_of_paths = 80 # 80
+path_length = 40 # 40
+window_size = 10 # 10
 num_of_documents = 1
 together = False
 num_of_workers = 3
 passes = 1
 
-method = "Deepwalk"
-params = {'alpha': 0.0}
+#method = "Deepwalk"
+method = "Node2Vec"
+#params = {'alpha': 0.0}
+params = {'p':2.0, 'q':0.25 }
 word_embed_size = 128
 topic_embed_size = 128
 
 
 
-walks_file = "./input/" + dataset_name + "/" + dataset_name + "_walk.corpus"
-topic_file = "./input/" + dataset_name + "/" + dataset_name + "_topic.corpus"
-word2topic_file = "./input/" + dataset_name + "/" + dataset_name + "_word2topic.map"
+walks_file = "./input/" + dataset_name + "/" + dataset_name + "_" + suffix + "_walk.corpus"
+topic_file = "./input/" + dataset_name + "/" + dataset_name + "_" + suffix + "_topic.corpus"
+word2topic_file = "./input/" + dataset_name + "/" + dataset_name + "_" + suffix + "_word2topic.map"
 
-word_embed_file = "./output/" + dataset_name + "/" + dataset_name +"_word.embedding"
-topic_embed_file = "./output/" + dataset_name + "/" + dataset_name +"_topic.embedding"
-combined_embed_file = "./output/" + dataset_name + "/" + dataset_name +"_combined.embedding"
+word_embed_file = "./output/" + dataset_name + "/" + dataset_name + "_" + suffix + "_word.embedding"
+topic_embed_file = "./output/" + dataset_name + "/" + dataset_name + "_" + suffix + "_topic.embedding"
+combined_embed_file = "./output/" + dataset_name + "/" + dataset_name + "_" + suffix + "_combined.embedding"
 
 
-
+print(dataset_name+"_"+suffix)
 
 if generate_walks is True:
     g = Graph()

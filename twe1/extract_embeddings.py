@@ -68,11 +68,13 @@ def extract_embedding(corpus_file, topic_file, window_size, number_of_nodes, num
     w1.save_wordvector(word_embed_file)
     print("The computation time for the word vectors: {}".format(time.time() - start_time))
 
-    print("Topics of each node are being detected")
+    print("Topics of each node are being detected...")
+    start_time = time.time()
     #word2topic = get_topics(walks_file=corpus_filename, output_topic_file=topic_filename,
     #                        number_of_topics=number_of_topics, number_of_nodes=number_of_nodes)
     gensim_path = "/home/abdulkadir/anaconda2/envs/twegensim/bin/python"
     os.system(gensim_path + " ./get_topics.py "+corpus_file+" "+topic_file+" "+word2topic_file+" "+str(number_of_topics)+" "+str(number_of_nodes)+" "+str(passes))
+    print("The computation time of topics: {}".format(time.time() - start_time))
 
     print("The word corpus and topic files are being combined...")
     combined_sentences = gensim2.models.word2vec.CombinedSentence(corpus_file, topic_file)
