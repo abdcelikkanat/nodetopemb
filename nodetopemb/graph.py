@@ -1,6 +1,9 @@
 import random
 import node2vec
 import networkx as nx
+import numpy as np
+import scipy.sparse as scio
+
 
 class Graph:
     """
@@ -59,6 +62,60 @@ class Graph:
 
         return path
 
+    def count_triangles_on_edges(self):
+        edgeId = 0
+        triCountOnEdges = scio.lil_matrix((self.num_of_nodes, self.num_of_nodes), dtype=np.int)
+
+        for u in range(self.num_of_nodes):
+                for v in self.adj_list[u]:
+                    if u < v:
+                        for w in self.adj_list[v]:
+                            if v < w:
+                                for x in self.adj_list[w]:
+                                    if x == u:
+                                        triCountOnEdges[u, v] += 1
+                                        triCountOnEdges[v, w] += 1
+                                        triCountOnEdges[w, u] += 1
+
+                                        triCountOnEdges[v, u] += 1
+                                        triCountOnEdges[w, v] += 1
+                                        triCountOnEdges[u, w] += 1
+        return triCountOnEdges
+
+
+    def triangle_walk_step(self, path_length, alpha=0.0, rand=random.Random(), starting_node=None, triangle_count=None):
+
+        if starting_node is None:
+            starting_node = rand.choice(range(self.number_of_nodes()))
+
+        path = [starting_node]
+        current_path_length = 1
+
+        while current_path_length < path_length:
+            # Get the latest appended node
+            latest_node = path[-1]
+            # If the current node has any neighbour
+            if len(self.adj_list[latest_node]) > 0:
+                # Return to the starting node with probability alpha
+                if rand.random() >= alpha:
+                    prob = [float(triangle_count[latest_node, node]) for node in self.adj_list[latest_node]]
+                    norm_constant = np.sum(prob)
+                    if norm_constant == 0.0:
+                        prob = [1.0/float(len(self.adj_list[latest_node])) for _ in range(len(self.adj_list[latest_node]))]
+                    else:
+                        prob = prob / norm_constant
+                    path.append(np.random.choice(self.adj_list[latest_node], p=prob))
+                else:
+                    path.append(path.append(self.adj_list[0]))
+
+                current_path_length += 1
+            else:
+                break
+
+        return path
+
+
+
     def graph2doc(self, number_of_paths, path_length, params=dict(), rand=random.Random(), method="Deepwalk"):
 
         corpus = []
@@ -94,5 +151,18 @@ class Graph:
 
             corpus = walks
 
+        if method == "TriWalk":
+            alpha = params['alpha']
+
+            tri_count = self.count_triangles_on_edges()
+
+            for _ in range(number_of_paths):
+                # Shuffle the nodes
+                rand.shuffle(node_list)
+                # For each node, initialize a random walk
+                for node in node_list:
+                    walk = self.triangle_walk_step(path_length=path_length, rand=rand, alpha=alpha,
+                                                   starting_node=node, triangle_count=tri_count)
+                    corpus.append(walk)
 
         return corpus

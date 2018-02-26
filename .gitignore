@@ -102,3 +102,9 @@ ENV/
 
 # pycharm
 .idea
+
+./input
+output/
+input/
+twe1/input/
+twe1/output/

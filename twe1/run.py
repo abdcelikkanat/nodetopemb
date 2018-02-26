@@ -5,9 +5,11 @@ import time
 import networkx as nx
 import oldgensim.gensim as gensim2 #modified gensim version
 
-dataset_name = "blogcatalog"
-suffix = "node2vec_p2_q025"
-
+dataset_name = "dblp"
+#suffix = "deepwalk_numpath40_pathlen10"
+#suffix = "deepwalk_numpath10_pathlen80"
+#suffix = "numpath10_pathlen80_p025_q025"
+#suffix = "numpath10_pathlen80_p025_q025"
 
 nx_graph_path = "../datasets/"+dataset_name+".gml"
 nx_graph = nx.read_gml(nx_graph_path)
@@ -16,18 +18,18 @@ number_of_topics = 65 #65
 number_of_nodes = nx_graph.number_of_nodes()
 
 generate_walks = True
-num_of_paths = 80 # 80
-path_length = 40 # 40
+num_of_paths = 40 # 80
+path_length = 10 # 40
 window_size = 10 # 10
 num_of_documents = 1
 together = False
 num_of_workers = 3
 passes = 1
 
-#method = "Deepwalk"
-method = "Node2Vec"
-#params = {'alpha': 0.0}
-params = {'p':2.0, 'q':0.25 }
+method = "Deepwalk"
+#method = "Node2Vec"
+params = {'alpha': 0.0}
+#params = {'p':0.25, 'q':0.25 }
 word_embed_size = 128
 topic_embed_size = 128
 
