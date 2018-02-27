@@ -37,6 +37,9 @@ class Graph:
             # Increase number of edges by 1 since it is a simple graph
             self.num_of_edges += 1
 
+    def nb_list(self, node):
+        return self.adj_list[node]
+
     def deepwalk_step(self, path_length, alpha=0.0, rand=random.Random(), starting_node=None):
 
         if starting_node is None:
@@ -115,6 +118,44 @@ class Graph:
         return path
 
 
+    def contUpdatedWalk_step(self, path_length, alpha=0.0, rand=random.Random(), starting_node=None, weights=None):
+
+        if weights is None:
+            weights = [[1 for _ in self.adj_list[i]] for i in range(self.number_of_nodes())]
+
+        if starting_node is None:
+            starting_node = rand.choice(range(self.number_of_nodes()))
+
+        path = [starting_node]
+        current_path_length = 1
+
+        while current_path_length < path_length:
+            # Get the latest appended node
+            latest_node = path[-1]
+            # If the current node has any neighbour
+            if len(self.adj_list[latest_node]) > 0:
+                # Return to the starting node with probability alpha
+                if rand.random() >= alpha:
+                    prob = [float(weights[latest_node][i]) for i in range(len(self.adj_list[latest_node]))]
+                    norm_const = np.sum(prob)
+                    if norm_const == 0.0:
+                        prob = [1.0/len(prob) for _ in range(len(prob))]
+                    else:
+                        prob = prob / norm_const
+                    chosen_node_inx = np.random.choice(range(len(self.adj_list[latest_node])), p=prob)
+                    chosen_node = self.adj_list[latest_node][chosen_node_inx]
+                    path.append(chosen_node)
+                    weights[latest_node][chosen_node_inx] += 1
+                    # weights[chosen_node][latest_node] += 1
+                else:
+                    path.append(path.append(self.adj_list[0]))
+
+                current_path_length += 1
+            else:
+                break
+
+        return path
+
 
     def graph2doc(self, number_of_paths, path_length, params=dict(), rand=random.Random(), method="Deepwalk"):
 
@@ -154,7 +195,7 @@ class Graph:
         if method == "TriWalk":
             alpha = params['alpha']
 
-            tri_count = self.count_triangles_on_edges()
+            tri_count = np.sqrt(self.count_triangles_on_edges())
 
             for _ in range(number_of_paths):
                 # Shuffle the nodes
@@ -164,5 +205,22 @@ class Graph:
                     walk = self.triangle_walk_step(path_length=path_length, rand=rand, alpha=alpha,
                                                    starting_node=node, triangle_count=tri_count)
                     corpus.append(walk)
+
+        if method == "contUpdatedWalk":
+            alpha = params['alpha']
+            weights = params['weights']
+            if weights is None:
+                weights = [[len(self.adj_list[j]) for j in self.adj_list[i]] for i in range(self.number_of_nodes())]
+
+            for _ in range(number_of_paths):
+                # Shuffle the nodes
+                rand.shuffle(node_list)
+                # For each node, initialize a random walk
+                for node in node_list:
+                    walk = self.contUpdatedWalk_step(path_length=path_length, rand=rand, alpha=alpha,
+                                                     starting_node=node, weights=weights)
+                    corpus.append(walk)
+
+            params['weights'] = weights
 
         return corpus
