@@ -1,6 +1,12 @@
 import numpy as np
+from nodetopemb import *
+from twe1.link_pred.split2train_test import *
+g = nx.read_gml("../datasets/karate.gml")
 
-M = np.array([[0,2,11],[4,1,7]])
 
-print(np.argsort(M, axis=None)[::-1][:3])
-print(M.flatten()[2])
+a = set([1, 2])
+b = set([2, 3])
+
+a.intersection(b)
+
+print(a)

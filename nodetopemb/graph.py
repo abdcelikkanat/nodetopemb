@@ -1,7 +1,6 @@
 import random
 import node2vec
 import networkx as nx
-<<<<<<< HEAD
 import numpy as np
 import scipy.sparse as scio
 
@@ -198,7 +197,7 @@ class Graph:
         if method == "TriWalk":
             alpha = params['alpha']
 
-            tri_count = np.sqrt(self.count_triangles_on_edges())
+            tri_count = 0.03 * scio.csr_matrix(self.count_triangles_on_edges())
 
             for _ in range(number_of_paths):
                 # Shuffle the nodes
