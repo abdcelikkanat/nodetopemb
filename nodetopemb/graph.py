@@ -1,9 +1,9 @@
 import random
 import node2vec
 import networkx as nx
+<<<<<<< HEAD
 import numpy as np
 import scipy.sparse as scio
-
 
 class Graph:
     """
@@ -37,8 +37,10 @@ class Graph:
             # Increase number of edges by 1 since it is a simple graph
             self.num_of_edges += 1
 
+
     def nb_list(self, node):
         return self.adj_list[node]
+
 
     def deepwalk_step(self, path_length, alpha=0.0, rand=random.Random(), starting_node=None):
 
@@ -64,6 +66,7 @@ class Graph:
                 break
 
         return path
+
 
     def count_triangles_on_edges(self):
         edgeId = 0

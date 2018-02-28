@@ -2,6 +2,7 @@ from nodetopemb import *
 import networkx as nx
 import numpy as np
 
+
 #g = nx.read_gml("../datasets/citeseer.gml")
 
 edges = [[0,1], [1,2], [0,2], [2,3], [3,4], [2,4], [5,4], [3,5]]
@@ -13,3 +14,9 @@ doc = myg.graph2doc(number_of_paths=1, path_length=8, method="TriWalk", params={
 
 for line in doc:
     print(line)
+
+g = nx.read_gml("../datasets/citeseer.gml")
+
+
+
+

@@ -5,11 +5,14 @@ import time
 import networkx as nx
 import oldgensim.gensim as gensim2 #modified gensim version
 
+
 dataset_name = "dblp"
 #suffix = "deepwalk_numpath40_pathlen10"
 #suffix = "deepwalk_numpath10_pathlen80"
 #suffix = "numpath10_pathlen80_p025_q025"
 #suffix = "numpath10_pathlen80_p025_q025"
+
+
 
 nx_graph_path = "../datasets/"+dataset_name+".gml"
 nx_graph = nx.read_gml(nx_graph_path)
@@ -21,6 +24,7 @@ generate_walks = True
 num_of_paths = 40 # 80
 path_length = 10 # 40
 window_size = 10 # 10
+
 num_of_documents = 1
 together = False
 num_of_workers = 3
@@ -30,6 +34,7 @@ method = "Deepwalk"
 #method = "Node2Vec"
 params = {'alpha': 0.0}
 #params = {'p':0.25, 'q':0.25 }
+
 word_embed_size = 128
 topic_embed_size = 128
 
@@ -45,6 +50,7 @@ combined_embed_file = "./output/" + dataset_name + "/" + dataset_name + "_" + su
 
 
 print(dataset_name+"_"+suffix)
+
 
 if generate_walks is True:
     g = Graph()

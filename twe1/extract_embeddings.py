@@ -68,6 +68,7 @@ def extract_embedding(corpus_file, topic_file, window_size, number_of_nodes, num
     w1.save_wordvector(word_embed_file)
     print("The computation time for the word vectors: {}".format(time.time() - start_time))
 
+
     print("Topics of each node are being detected...")
     start_time = time.time()
     #word2topic = get_topics(walks_file=corpus_filename, output_topic_file=topic_filename,
