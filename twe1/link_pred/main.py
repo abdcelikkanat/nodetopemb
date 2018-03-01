@@ -7,7 +7,7 @@ from sklearn.metrics import roc_auc_score, roc_curve
 import matplotlib.pyplot as plt
 import time
 
-
+#dataset_name = "karate"
 #dataset_name = "astro-ph"
 dataset_name = "facebook"
 
@@ -20,15 +20,18 @@ gmlfile = "../../datasets/{}.gml".format(dataset_name)
 g = nx.read_gml(gmlfile)
 print("Number of nodes: {}\nNumber of edges: {}".format(g.number_of_nodes(), g.number_of_edges()))
 
-size = 44000
+#size = 39
+#size = 99055
+size = 44115
 
 start_time = time.time()
-res_graph, tp_edges, tn_edges = split(g=g, method="Exact", params={'pos_sample_size': size, 'neg_sample_size': size})
-
+train_graph, tp_edges, tn_edges = split(g=g, method="Exact", params={'pos_sample_size': size, 'neg_sample_size': size})
+print(train_graph.number_of_nodes())
+print(train_graph.number_of_edges())
 print("Scores are being computed")
 edges = [] + tp_edges + tn_edges
 print(len(edges))
-score_matrix = compute_scores(graph=res_graph, method="Jaccard", edges=edges).todense()
+score_matrix = compute_scores(graph=train_graph, method="Jaccard", edges=edges).todense()
 
 y_true = []
 y_score = []
