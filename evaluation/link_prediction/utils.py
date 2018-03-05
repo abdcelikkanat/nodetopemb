@@ -1,6 +1,7 @@
 import networkx as nx
 import scipy.sparse as scio
 import numpy as np
+import random as rand
 
 
 def compute_scores(graph=None, embeddings=None, method=None, edges=list()):
@@ -23,8 +24,8 @@ def compute_scores(graph=None, embeddings=None, method=None, edges=list()):
 
         if method == "AdamicAdarIndex":
             for u, v, coeff in nx.adamic_adar_index(graph, edges):
-                score_matrix[int(u), int(v)] = coeff
-                score_matrix[int(v), int(u)] = coeff
+                score_matrix[int(u), int(v)] = -coeff
+                score_matrix[int(v), int(u)] = -coeff
 
         if method == "PrefAttach":
             for u, v, coeff in nx.preferential_attachment(graph, edges):
@@ -33,6 +34,7 @@ def compute_scores(graph=None, embeddings=None, method=None, edges=list()):
 
     if embeddings is not None:
         n = len(embeddings)
+        score_matrix = scio.lil_matrix(np.zeros(shape=(n, n), dtype=np.float))
 
         if method == "Average":
             for edge in edges:
@@ -87,18 +89,6 @@ def split(g, method, params):
     train_edges_inx = []
     test_edges_inx = []
 
-    if method == "Random":
-        # Remove each edge with probability p
-        p = params["p"]
-        if p is None:
-            p = 0.2
-
-        for i in range(g.number_of_edges()):
-            if rand.random() < p:
-                test_edges_inx.append(i)
-            else:
-                train_edges_inx.append(i)
-
     if method == "Exact":
         pos_sample_size = params['pos_sample_size']
         neg_sample_size = params['neg_sample_size']
@@ -151,5 +141,6 @@ def split(g, method, params):
             if candidate_edge not in g.edges():
                 test_neg_edge_samples.append(candidate_edge)
                 chosen_neg_sample_count += 1
+
 
     return residual_g, test_pos_edge_samples, test_neg_edge_samples
