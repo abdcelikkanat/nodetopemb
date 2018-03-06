@@ -8,7 +8,7 @@ def compute_scores(graph=None, embeddings=None, method=None, edges=list()):
 
     if graph is not None:
         n = graph.number_of_nodes()
-        score_matrix = scio.lil_matrix(np.zeros(shape=(n, n), dtype=np.float))
+        score_matrix = -1*scio.lil_matrix(np.ones(shape=(n, n), dtype=np.float))
 
         if method == "ComNeigh":
             for edge in edges:
@@ -134,7 +134,7 @@ def split(g, method, params):
         chosen_neg_sample_count = 0
         # Choose true negative samples
         while chosen_neg_sample_count < neg_sample_size:
-            u, v = np.random.choice(range(n), size=2, replace=True)
+            u, v = np.random.choice(range(n), size=2, replace=False)
 
             candidate_edge = (str(u), str(v))
 
@@ -142,5 +142,6 @@ def split(g, method, params):
                 test_neg_edge_samples.append(candidate_edge)
                 chosen_neg_sample_count += 1
 
+        print("Counts {} {}".format(len(test_pos_edge_samples), len(test_neg_edge_samples)))
 
     return residual_g, test_pos_edge_samples, test_neg_edge_samples
