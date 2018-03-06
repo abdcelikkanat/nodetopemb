@@ -1,5 +1,5 @@
+from graph.graph import Graph
 from learn_embeddings import learn_embedding
-from nodetopemb import Graph
 from generate_walks_corpus import saveGraphWalks
 import time
 import networkx as nx
@@ -11,7 +11,7 @@ dataset_name = "citeseer"
 #suffix = "deepwalk_numpath10_pathlen80"
 #suffix = "numpath10_pathlen80_p025_q025"
 #suffix = "numpath10_pathlen80_p025_q025"
-suffix = ""
+suffix = "topicEmbedSize64"
 
 
 nx_graph_path = "../datasets/"+dataset_name+".gml"
@@ -36,7 +36,7 @@ params = {'alpha': 0.0}
 #params = {'p':0.25, 'q':0.25 }
 
 word_embed_size = 128
-topic_embed_size = 128
+topic_embed_size = 64
 
 
 

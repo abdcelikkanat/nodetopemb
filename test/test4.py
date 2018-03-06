@@ -1,12 +1,6 @@
-import numpy as np
-from nodetopemb import *
-from twe1.link_pred.split2train_test import *
-g = nx.read_gml("../datasets/karate.gml")
+from graph.graph import Graph
 
 
-a = set([1, 2])
-b = set([2, 3])
-
-a.intersection(b)
-
-print(a)
+myg = Graph()
+myg.add_edges_from([[0,1],[2,3]])
+print(myg.number_of_edges())

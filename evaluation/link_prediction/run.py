@@ -5,12 +5,15 @@ from utils import *
 from sklearn.metrics import roc_auc_score, roc_curve
 import matplotlib.pyplot as plt
 import time
+from sklearn.preprocessing import normalize
 
 #dataset_name = "karate"
 #dataset_name = "astro-ph"
 #dataset_name = "facebook"
-dataset_name = "astro-ph"
+dataset_name = "facebook"
 suffix = "_temp"
+
+
 
 base = "../../twe1/temp_files/output/"
 word_embedding_file = base + "/" + dataset_name +"/" + dataset_name + suffix + "_word.embedding"
@@ -20,7 +23,7 @@ combined_embedding_file = base + "/" + dataset_name +"/" + dataset_name + suffix
 
 #embed_score_method = "AdamicAdarIndex"
 embed_score_method = "L2"
-classic_score_method = "Jaccard"
+classic_score_method = "ComNeigh"
 suffix += "_{}".format(embed_score_method)
 
 print("Dataset: {} Suffix: {}".format(dataset_name, suffix))
@@ -28,12 +31,13 @@ print("Dataset: {} Suffix: {}".format(dataset_name, suffix))
 gmlfile = "../../datasets/{}.gml".format(dataset_name)
 g = nx.read_gml(gmlfile)
 
+
 print("Number of nodes: {}\nNumber of edges: {}".format(g.number_of_nodes(), g.number_of_edges()))
 
 # Consider the half of the edges
 size = np.floor(g.number_of_edges()*0.75)
 #size += np.floor(size/5.0)
-#size = 10
+#size = 5
 
 print("Positive and negative samples are being generated")
 start_time = time.time()
@@ -47,15 +51,10 @@ print("Scores are being computed for "+classic_score_method)
 edges = [] + tp_edges + tn_edges
 
 score_matrix = compute_scores(graph=train_graph, embeddings=None, method=classic_score_method, edges=edges)
-M = np.asarray(score_matrix.todense())
-print(M.shape)
-counter = 0
-for i in range(M.shape[0]):
-    for j in range(M.shape[0]):
-        if M[i,j] > -0.5:
-            print("i: {} j: {} val: {}".format(i, j, M[i,j]))
-            counter += 1
-print("Counter: {}".format(counter))
+# Normalize score matrix
+score_matrix = normalize(np.asarray(score_matrix.todense()), axis=1, norm='l1')
+
+
 
 y_true = []
 y_score = []
@@ -80,6 +79,9 @@ plt.title("Jaccard")
 plt.plot(fpr1, tpr1, lw=1, color='darkorange', label='ROC curve ')
 plt.savefig("./images/" + suffix + "_"+classic_score_method+".png", bbox_inches="tight")
 plt.show()
+
+
+
 """
 
 
