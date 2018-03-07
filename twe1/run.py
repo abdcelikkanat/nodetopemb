@@ -11,20 +11,20 @@ dataset_name = "citeseer"
 #suffix = "deepwalk_numpath10_pathlen80"
 #suffix = "numpath10_pathlen80_p025_q025"
 #suffix = "numpath10_pathlen80_p025_q025"
-suffix = "test"
+suffix = "pathlen350_numofpaths1_topic80"
 
 
 nx_graph_path = "../datasets/"+dataset_name+".gml"
 nx_graph = nx.read_gml(nx_graph_path)
 
-nx_graph = max(nx.connected_component_subgraphs(nx_graph), key=len)
+#nx_graph = max(nx.connected_component_subgraphs(nx_graph), key=len)
 
-number_of_topics = 65 #65
+number_of_topics = 80 #65
 number_of_nodes = nx_graph.number_of_nodes()
 
 generate_walks = True
 num_of_paths = 1 # 80
-path_length = nx_graph.number_of_nodes()*100 # 40
+path_length = 350 # 40
 window_size = 10 # 10
 
 num_of_documents = 1

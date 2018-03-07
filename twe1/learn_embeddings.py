@@ -70,14 +70,20 @@ def learn_embedding(corpus_file, topic_file, window_size, number_of_nodes, numbe
     gensim_path = "/home/abdulkadir/anaconda2/envs/twegensim/bin/python"
     os.system(gensim_path + " ./get_topics.py "+corpus_file+" "+topic_file+" "+word2topic_file+" "+str(number_of_topics)+" "+str(number_of_nodes)+" "+str(passes))
     """
-    corpus_lines = []
+    corpus_lines = [[] for _ in range(number_of_nodes)]
     with open(corpus_file, 'r') as f:
-        corpus_lines.append(f.readline())
+        for line in f.readlines():
+            tokens = line.strip().split()
+            corpus_lines[int(tokens[0])].extend(tokens)
+
+    #print(corpus_lines)
+    document_counter = len(corpus_lines)
+    #print("# of lines: {}".format(document_counter))
 
     with open("./gibbslda/tmp/walks.data", 'w') as f:
-        f.write("{}\n".format(len(corpus_lines)))
+        f.write("{}\n".format(document_counter))
         for line in corpus_lines:
-            f.write(line)
+            f.write("{}\n".format(" ".join(line)))
 
     os.system("./gibbslda/lda -est -alpha 0.5 -beta 0.1 -savestep 2000 -ntopics "+str(number_of_topics)+" -niters 1000 -dfile ./gibbslda/tmp/walks.data")
     wordmapfile = "./gibbslda/tmp/wordmap.txt"
@@ -92,11 +98,11 @@ def learn_embedding(corpus_file, topic_file, window_size, number_of_nodes, numbe
         for vals in f.readlines():
             topic_word_prob[say, :] = [float(v) for v in vals.strip().split()]
             say += 1
-    print(topic_word_prob)
+    #print(topic_word_prob)
     argmaxinx = np.argmax(topic_word_prob, axis=0)
     word2topic = {}
-    print(argmaxinx)
-    print(argmaxinx.shape)
+    #print(argmaxinx)
+    #print(argmaxinx.shape)
     for i in range(argmaxinx.shape[0]):
         word2topic.update({id2word[i]: argmaxinx[i]})
 

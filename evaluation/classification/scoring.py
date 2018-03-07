@@ -43,16 +43,16 @@ def main():
   folder_directory = "output/citeseer/"
 
 
-  file_path = "citeseer__word.embedding"
+  file_path = "citeseer_test_combined.embedding"
   mat_file = "citeseer.mat"
-  output_text_file = "../results/citeseer.result"
+  output_text_file = "../results/citeseer_pathlen250_numofpaths1.result"
 
 
   embeddings_file = base + folder_directory + file_path
   matfile = "../../mat_files/" + mat_file
   adj_matrix_name = "network"
   label_matrix_name = "group"
-  num_shuffles = 50
+  num_shuffles = 10
   all = True
 
   # 1. Load Embeddings
