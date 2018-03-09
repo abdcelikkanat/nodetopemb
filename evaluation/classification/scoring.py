@@ -39,21 +39,23 @@ def sparse2graph(x):
     return {str(k): [str(x) for x in v] for k,v in iteritems(G)}
 
 def main():
+  datasetname = "blogcatalog"
   base = "../../twe1/temp_files/"
-  folder_directory = "output/citeseer/"
+  folder_directory = "output/"+datasetname+"/"
 
-
-  file_path = "citeseer_pathlen1000_numofpaths1_topic80_combined.embedding"
-  mat_file = "citeseer.mat"
-  output_text_file = "../results/citeseer_pathlen1000_numofpaths1_topic80.result"
+  file_path = "blogcatalog_pathlen250_numofpaths10_combined.embedding"
+  #file_path = "citeseer_degreeBasedWalk_Pow2_combined.embedding"
+  mat_file = datasetname+".mat"
+  output_text_file = "../results/blogcatalog_pathlen250_numofpaths10_combined.result"
+  #output_text_file = "../results/citeseer_degreeBasedWalk_Pow2.result"
 
 
   embeddings_file = base + folder_directory + file_path
   matfile = "../../mat_files/" + mat_file
   adj_matrix_name = "network"
   label_matrix_name = "group"
-  num_shuffles = 100
-  all = True
+  num_shuffles = 25
+  all = False
 
   # 1. Load Embeddings
   model = KeyedVectors.load_word2vec_format(embeddings_file, binary=False)

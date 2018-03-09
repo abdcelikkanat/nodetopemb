@@ -6,12 +6,12 @@ import networkx as nx
 import oldgensim.gensim as gensim2 #modified gensim version
 
 
-dataset_name = "blogcatalog"
+dataset_name = "citeseer"
 #suffix = "deepwalk_numpath40_pathlen10"
 #suffix = "deepwalk_numpath10_pathlen80"
 #suffix = "numpath10_pathlen80_p025_q025"
 #suffix = "numpath10_pathlen80_p025_q025"
-suffix = "pathlen250_numofpaths10"
+suffix = "pathlen40_numofpaths80_topic100"
 
 
 nx_graph_path = "../datasets/"+dataset_name+".gml"
@@ -19,12 +19,12 @@ nx_graph = nx.read_gml(nx_graph_path)
 
 #nx_graph = max(nx.connected_component_subgraphs(nx_graph), key=len)
 
-number_of_topics = 65 #65
+number_of_topics = 100 #65
 number_of_nodes = nx_graph.number_of_nodes()
 
 generate_walks = True
-num_of_paths = 10 # 80
-path_length = 250 # 40
+num_of_paths = 80 # 80
+path_length = 40 # 40
 window_size = 10 # 10
 
 num_of_documents = 1
