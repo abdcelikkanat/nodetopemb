@@ -66,14 +66,6 @@ while labeled_node_count != N:
         labels[visited_node] = cluster_label
         labeled_node_count += 1
 
-
-    """
-    if weights[nb] == int(current_node):
-        labels[nb] = labels[current_node]
-        queue.append(nb)
-        labeled_node_count += 1
-    """
-
 print(weights)
 print(labels)
 print(label_inx)
@@ -93,8 +85,10 @@ nx.draw_networkx_edges(g,pos, width=1.0,alpha=0.5)
 plt.show()
 """
 
-number_of_paths = 80
-path_len = 40
+
+
+number_of_paths = 1
+path_len = 512
 
 corpus = []
 for node in g.nodes():
@@ -112,20 +106,47 @@ for node in g.nodes():
                 pos_next_nodes = [current_node]
 
             current_node = np.random.choice(a=pos_next_nodes, size=1)[0]
-    corpus.append(path)
+        corpus.append(path)
 
-with open("./test_walk.corpus", 'w') as f:
+with open("./test_citeseer_walk.corpus", 'w') as f:
     for path in corpus:
         f.write("{}\n".format(" ".join(path)))
 
 import gensim
 word_embed_size = 128
-window_size = 10
-corpus_file = "./test_walk.corpus"
-word_embed_file = "./test_walk.embedding"
+window_size = 50
+corpus_file = "./test_citeseer_walk.corpus"
+word_embed_file = "./test_citeseer_walk.embedding"
 
 sentences = gensim.models.word2vec.Text8Corpus(corpus_file)
 w = gensim.models.Word2Vec(sentences, size=word_embed_size, window=window_size,
                             sg=1, hs=1, workers=3,
-                            sample=0.001, negative=5)
+                            sample=0.001, negative=1000)
 w.wv.save_word2vec_format(word_embed_file)
+
+
+
+"""
+number_of_clusters = 6
+clusters = nx.get_node_attributes(g, 'clusters')
+true_counts = 0
+for node in g.nodes():
+    cluster_counts = np.zeros(shape=number_of_clusters, dtype=np.int)
+    node_label = labels[node]
+    for nb in nx.neighbors(g, node):
+        if node_label == labels[nb]:
+            cluster_counts[clusters[nb]] += 1
+
+        for nb_nb in nx.neighbors(g, nb):
+            if node_label == labels[nb_nb]:
+                cluster_counts[clusters[nb_nb]] += 1
+
+
+
+    if clusters[node] == np.argmax(cluster_counts):
+        true_counts += 1
+
+n = g.number_of_nodes()
+acc = float(true_counts)*100.0 / float(n)
+print("Number of nodes: {} Prediction accuracy: {}".format(n, acc))
+"""
