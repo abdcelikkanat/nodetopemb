@@ -11,32 +11,32 @@ dataset_name = "citeseer"
 #suffix = "deepwalk_numpath10_pathlen80"
 #suffix = "numpath10_pathlen80_p025_q025"
 #suffix = "numpath10_pathlen80_p025_q025"
-suffix = "topicEmbedSize64"
+suffix = "test"
 
 
 nx_graph_path = "../datasets/"+dataset_name+".gml"
 nx_graph = nx.read_gml(nx_graph_path)
 
-number_of_topics = 65 #65
+number_of_topics = 75 #65
 number_of_nodes = nx_graph.number_of_nodes()
 
 generate_walks = True
-num_of_paths = 40 # 80
-path_length = 10 # 40
+num_of_paths = 2024 # 80
+path_length = 5 # 40
 window_size = 10 # 10
 
 num_of_documents = 1
 together = False
 num_of_workers = 3
-passes = 1
+passes = 10
 
-method = "Deepwalk"
+method = "adaptedDeepwalk"
 #method = "Node2Vec"
 params = {'alpha': 0.0}
 #params = {'p':0.25, 'q':0.25 }
 
 word_embed_size = 128
-topic_embed_size = 64
+topic_embed_size = 128
 
 
 

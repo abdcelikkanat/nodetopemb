@@ -177,6 +177,21 @@ class Graph:
                                               starting_node=node)
                     corpus.append(walk)
 
+        if method == "adaptedDeepwalk":
+            alpha = params['alpha']
+
+            # Shuffle the nodes
+            rand.shuffle(node_list)
+            # For each node, initialize a random walk
+            for node in node_list:
+                walk = []
+                for _ in range(number_of_paths):
+
+                    w = self.deepwalk_step(path_length=path_length, rand=rand, alpha=alpha,
+                                              starting_node=node)
+                    walk.extend(w)
+                corpus.append(walk)
+
         if method == "Node2Vec":
             # Generate the desired networkx graph
             p = params['p']
