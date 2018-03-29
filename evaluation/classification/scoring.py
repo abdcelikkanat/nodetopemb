@@ -43,10 +43,10 @@ def main():
   base = "../../twe1/temp_files/"
   folder_directory = "output/"+datasetname+"/"
 
-  file_path = "blogcatalog_pathlen250_numofpaths10_combined.embedding"
+  file_path = "blogcatalog_pathlen10_numpaths40_topic120_iter2000_combined.embedding"
   #file_path = "citeseer_degreeBasedWalk_Pow2_combined.embedding"
   mat_file = datasetname+".mat"
-  output_text_file = "../results/blogcatalog_pathlen250_numofpaths10_combined.result"
+  output_text_file = "../results/blogcatalog_pathlen10_numpaths40_topic120_iter2000_combined.result"
   #output_text_file = "../results/citeseer_degreeBasedWalk_Pow2.result"
 
 
@@ -55,7 +55,7 @@ def main():
   adj_matrix_name = "network"
   label_matrix_name = "group"
   num_shuffles = 25
-  all = False
+  all = True
 
   # 1. Load Embeddings
   model = KeyedVectors.load_word2vec_format(embeddings_file, binary=False)

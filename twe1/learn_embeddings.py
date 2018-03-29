@@ -85,7 +85,7 @@ def learn_embedding(corpus_file, topic_file, window_size, number_of_nodes, numbe
         for line in corpus_lines:
             f.write("{}\n".format(" ".join(line)))
 
-    os.system("./gibbslda/lda -est -alpha 0.5 -beta 0.1 -savestep 2000 -ntopics "+str(number_of_topics)+" -niters 1000 -dfile ./gibbslda/tmp/walks.data")
+    os.system("./gibbslda/lda -est -alpha 0.5 -beta 0.1 -savestep 20000 -ntopics "+str(number_of_topics)+" -niters 1000 -dfile ./gibbslda/tmp/walks.data")
     wordmapfile = "./gibbslda/tmp/wordmap.txt"
     id2word = pre_process.load_id2word(wordmapfile)
     tassignfile = "./gibbslda/tmp/model-final.tassign"
