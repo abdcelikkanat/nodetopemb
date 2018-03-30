@@ -11,7 +11,7 @@ dataset_name = "blogcatalog"
 #suffix = "deepwalk_numpath10_pathlen80"
 #suffix = "numpath10_pathlen80_p025_q025"
 #suffix = "numpath10_pathlen80_p025_q025"
-suffix = "pathlen10_numpaths40_topic200_iter1000"
+suffix = "pathlen10_numpaths40_topic300_iter1000"
 
 
 nx_graph_path = "../datasets/"+dataset_name+".gml"
@@ -19,7 +19,7 @@ nx_graph = nx.read_gml(nx_graph_path)
 
 #nx_graph = max(nx.connected_component_subgraphs(nx_graph), key=len)
 
-number_of_topics = 200 #65
+number_of_topics = 300 #65
 number_of_nodes = nx_graph.number_of_nodes()
 
 generate_walks = True

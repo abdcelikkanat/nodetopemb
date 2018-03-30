@@ -43,10 +43,10 @@ def main():
   base = "../../twe1/temp_files/"
   folder_directory = "output/"+datasetname+"/"
 
-  file_path = "blogcatalog_pathlen10_numpaths40_topic120_iter2000_combined.embedding"
+  file_path = "blogcatalog_pathlen10_numpaths40_topic200_iter1000_combined.embedding"
   #file_path = "citeseer_degreeBasedWalk_Pow2_combined.embedding"
   mat_file = datasetname+".mat"
-  output_text_file = "../results/blogcatalog_pathlen10_numpaths40_topic120_iter2000_combined.result"
+  output_text_file = "../results/blogcatalog_pathlen10_numpaths40_topic200_iter1000_combined.result"
   #output_text_file = "../results/citeseer_degreeBasedWalk_Pow2.result"
 
 
