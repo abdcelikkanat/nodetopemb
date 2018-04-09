@@ -39,14 +39,14 @@ def sparse2graph(x):
     return {str(k): [str(x) for x in v] for k,v in iteritems(G)}
 
 def main():
-  datasetname = "citeseer"
+  datasetname = "dblp"
   base = "../../twe1/temp_files/"
   folder_directory = "output/"+datasetname+"/"
 
-  file_path = "word2vec_gaussian.embedding"
+  file_path = "lda_dblp_n80_l40_w10_topic70_combined.embedding"
   #file_path = "citeseer_degreeBasedWalk_Pow2_combined.embedding"
   mat_file = datasetname+".mat"
-  output_text_file = "../results/word2vec_gaussian.result"
+  output_text_file = "../results/lda_dblp_n80_l40_w10_topic70_combined.result"
   #output_text_file = "../results/citeseer_degreeBasedWalk_Pow2.result"
 
 
