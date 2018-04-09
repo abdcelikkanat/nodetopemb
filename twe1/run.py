@@ -6,12 +6,12 @@ import networkx as nx
 import oldgensim.gensim as gensim2 #modified gensim version
 
 
-dataset_name = "dblp"
+dataset_name = "citeseer"
 #suffix = "deepwalk_numpath40_pathlen10"
 #suffix = "deepwalk_numpath10_pathlen80"
 #suffix = "numpath10_pathlen80_p025_q025"
 #suffix = "numpath10_pathlen80_p025_q025"
-suffix = "pathlen32_numofpaths128_topic85"
+suffix = "n=80_l=40_w=10_topic85"
 
 
 nx_graph_path = "../datasets/"+dataset_name+".gml"
@@ -23,8 +23,8 @@ number_of_topics = 85 #65
 number_of_nodes = nx_graph.number_of_nodes()
 
 generate_walks = True
-num_of_paths = 128 # 80
-path_length = 32 # 40
+num_of_paths = 80 # 80
+path_length = 40 # 40
 window_size = 10 # 10
 
 num_of_documents = 1
