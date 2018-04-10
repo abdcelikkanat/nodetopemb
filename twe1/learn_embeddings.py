@@ -46,7 +46,7 @@ def concatenate_embeddings(word_embed_file, topic_embed_file, word2topic_file, o
             f.write("{} {}\n".format(word, " ".join(combined_embed[word])))
 
 
-def learn_embedding(corpus_file, topic_file, window_size, number_of_nodes, number_of_topics, word2topic_file, word_embed_file, word_embed_size, topic_embed_file, topic_embed_size, combined_embed_file, num_of_workers, passes):
+def learn_embedding(corpus_file, topic_file, window_size, number_of_nodes, number_of_topics, word2topic_file, word_embed_file, word_embed_size, topic_embed_file, topic_embed_size, combined_embed_file, num_of_workers, passes, corpus_file_base=0):
     """
     Files which will be used
     - corpus_filename
@@ -71,10 +71,14 @@ def learn_embedding(corpus_file, topic_file, window_size, number_of_nodes, numbe
     os.system(gensim_path + " ./get_topics.py "+corpus_file+" "+topic_file+" "+word2topic_file+" "+str(number_of_topics)+" "+str(number_of_nodes)+" "+str(passes))
     """
     corpus_lines = [[] for _ in range(number_of_nodes)]
+
+    mycounter = 0
     with open(corpus_file, 'r') as f:
         for line in f.readlines():
+            mycounter += 1
             tokens = line.strip().split()
-            corpus_lines[int(tokens[0])].extend(tokens)
+            corpus_lines[int(tokens[0])].extend([str(int(t)) for t in tokens])
+
 
     #print(corpus_lines)
     document_counter = len(corpus_lines)
@@ -83,9 +87,11 @@ def learn_embedding(corpus_file, topic_file, window_size, number_of_nodes, numbe
     with open("./gibbslda/tmp/walks.data", 'w') as f:
         f.write("{}\n".format(document_counter))
         for line in corpus_lines:
-            f.write("{}\n".format(" ".join(line)))
+            if len(line) > 0:
+                f.write("{}\n".format(" ".join(line)))
 
-    os.system("./gibbslda/lda -est -alpha 0.5 -beta 0.1 -savestep 2000 -ntopics "+str(number_of_topics)+" -niters 1000 -dfile ./gibbslda/tmp/walks.data")
+    cmd = "./gibbslda/lda -est -alpha 0.5 -beta 0.1 -savestep 1000 -ntopics "+str(number_of_topics)+" -niters 1000 -dfile ./gibbslda/tmp/walks.data"
+    os.system(cmd)
     wordmapfile = "./gibbslda/tmp/wordmap.txt"
     id2word = pre_process.load_id2word(wordmapfile)
     tassignfile = "./gibbslda/tmp/model-final.tassign"

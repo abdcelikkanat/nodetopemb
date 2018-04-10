@@ -21,8 +21,10 @@ nx_graph = nx.read_gml(nx_graph_path)
 
 number_of_topics = 85 #65
 number_of_nodes = nx_graph.number_of_nodes()
+print(number_of_nodes)
 
 generate_walks = True
+walks_file = "./temp_files/input/" + dataset_name + "/" + "deepwalk_citeseer_n=80_l=40_w=10.corpus"
 num_of_paths = 80 # 80
 path_length = 40 # 40
 window_size = 10 # 10
@@ -42,8 +44,8 @@ word_embed_size = 128
 topic_embed_size = 128
 
 
-
-walks_file = "./temp_files/input/" + dataset_name + "/" + dataset_name + "_" + suffix + "_walk.corpus"
+if generate_walks is True:
+    walks_file = "./temp_files/input/" + dataset_name + "/" + dataset_name + "_" + suffix + "_walk.corpus"
 topic_file = "./temp_files/input/" + dataset_name + "/" + dataset_name + "_" + suffix + "_topic.corpus"
 word2topic_file = "./temp_files/input/" + dataset_name + "/" + dataset_name + "_" + suffix + "_word2topic.map"
 
